@@ -1,16 +1,109 @@
-<html>
+<!DOCTYPE html>
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects Homepage</title>
+    <title>Akademik Matematik Asistanı</title>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-@@ -14,7 +14,7 @@
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f7f6; 
+            color: #333; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid #2c3e50; 
+            padding-bottom: 10px; 
+        }
+        .input-area { 
+            width: 100%; 
+            height: 100px; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            margin-bottom: 10px; 
+            font-size: 16px; 
+            resize: vertical;
+        }
+        .btn { 
+            background-color: #2c3e50; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            transition: 0.3s;
+        }
+        .btn:hover { background-color: #1a252f; }
+        .output-area { 
+            background-color: white; 
+            padding: 20px; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            min-height: 200px; 
+            margin-top: 20px; 
+            line-height: 1.6; 
+        }
+        .loading { font-style: italic; color: #7f8c8d; }
     </style>
 </head>
 <body>
-    <h1>Hi 👋</h1>
-    <p><a href="#">Matematik LLM</a></p>
+
+    <div class="header">
+        <h1>Matematik Çözümleyici</h1>
+        <p>Llama-3-8B AWQ Yapay Zeka Altyapısı</p>
+    </div>
+
+    <textarea id="soruInput" class="input-area" placeholder="Örneğin: f(x) = x^2 + 3x fonksiyonunun türevini adım adım açıkla."></textarea>
+    <button class="btn" onclick="soruSor()">Çözümü Getir</button>
+
+    <div id="cevapOutput" class="output-area">
+        Yanıtınız burada akademik formüllerle birlikte görüntülenecektir...
+    </div>
+
+    <script>
+        async function soruSor() {
+            const soru = document.getElementById("soruInput").value;
+            const outputDiv = document.getElementById("cevapOutput");
+            
+            if (!soru) return alert("Lütfen bir soru girin!");
+
+            // Modal GPU'sunun uyanması birkaç saniye sürebilir
+            outputDiv.innerHTML = '<span class="loading">Yapay zeka çözümü üretiyor, lütfen bekleyin... (Bu işlem GPU uykudaysa 10-15 saniye sürebilir)</span>';
+
+            try {
+                // Modal API adresimiz:
+                const apiUrl = "https://llama-3-8b-i-a-v2-awq--api.modal.run";
+                
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: soru })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Sunucuyla iletişim kurulamadı. (Tarayıcı konsolunu kontrol et)");
+                }
+
+                const data = await response.json();
+                
+                // Satır atlamalarını HTML formatına çevirip yazdırıyoruz
+                outputDiv.innerHTML = data.answer.replace(/\n/g, '<br>');
+                
+                // MathJax'i tetikleyerek metnin içindeki LaTeX kodlarını ($) görsele dönüştürüyoruz
+                MathJax.typesetPromise([outputDiv]);
+
+            } catch (error) {
+                outputDiv.innerHTML = `<span style="color:red;">Hata: ${error.message}</span>`;
+                console.error("Detaylı Hata:", error);
+            }
+        }
+    </script>
 </body>
 </html>
