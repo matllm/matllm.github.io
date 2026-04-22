@@ -1,108 +1,495 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademik Matematik Asistanı</title>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Math Symbols</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f4f7f6; 
-            color: #333; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px; 
+        body {
+            margin: 0;
+            background-color: #000000;
+            color: #fff;
+            font-family: Helvetica, sans-serif;
+            overflow: hidden;
         }
-        .header { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #2c3e50; 
-            padding-bottom: 10px; 
+        #loading {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(127, 255, 255, 0.9);
+            font-size: 20px;
+            letter-spacing: 1px;
+            text-align: center;
+            z-index: 999;
+            transition: opacity 0.5s;
         }
-        .input-area { 
-            width: 100%; 
-            height: 100px; 
-            padding: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 5px; 
-            margin-bottom: 10px; 
-            font-size: 16px; 
-            resize: vertical;
+        #menu {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
         }
-        .btn { 
-            background-color: #2c3e50; 
-            color: white; 
-            border: none; 
-            padding: 10px 20px; 
-            font-size: 16px; 
-            cursor: pointer; 
-            border-radius: 5px; 
-            transition: 0.3s;
+        
+        .element {
+            width: 140px;
+            height: 180px;
+            cursor: pointer;
         }
-        .btn:hover { background-color: #1a252f; }
-        .output-area { 
-            background-color: white; 
-            padding: 20px; 
-            border-radius: 5px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            min-height: 200px; 
-            margin-top: 20px; 
-            line-height: 1.6; 
+        
+        .card {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, 0.5);
+            border: 1px solid rgba(127, 255, 255, 0.25);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 8px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
-        .loading { font-style: italic; color: #7f8c8d; }
+
+        .element:hover .card {
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            z-index: 500;
+        }
+
+        .element.expanded .card {
+            top: -70px;
+            left: -50px;
+            width: 240px;
+            height: 320px;
+            z-index: 1000;
+            background-color: rgba(0, 50, 50, 0.95) !important;
+            box-shadow: 0px 0px 30px rgba(0, 255, 255, 1);
+            border: 2px solid rgba(127, 255, 255, 1);
+        }
+
+        .category {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(127, 255, 255, 0.75);
+            width: 100%;
+            text-align: right;
+            margin-bottom: auto;
+            transition: all 0.4s;
+            white-space: nowrap;
+        }
+        
+        .symbol {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+            height: 100px;
+            font-size: 56px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.95);
+        }
+
+        .details {
+            font-size: 12px;
+            font-weight: bold;
+            color: rgba(127, 255, 255, 0.9);
+            width: 100%;
+            text-align: center;
+            margin-top: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .description {
+            display: none;
+            font-size: 12px;
+            color: #ffffff;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-top: 1px solid rgba(127, 255, 255, 0.3);
+            line-height: 1.4;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .element.expanded .description {
+            display: block;
+            opacity: 1;
+        }
+        
+        .katex-display { margin: 0 !important; }
+        .katex { font-size: 1em !important; display: inline-block; }
+
+        button {
+            color: rgba(127, 255, 255, 0.75);
+            background: transparent;
+            border: 1px solid rgba(127, 255, 255, 0.75);
+            padding: 8px 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 2px;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: rgba(0, 255, 255, 0.5);
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
-
-    <div class="header">
-        <h1>Matematik Çözümleyici</h1>
-        <p>Llama-3-8B AWQ Yapay Zeka Altyapısı</p>
+    <div id="loading">loading...</div>
+    <div id="container"></div>
+    <div id="menu">
+        <button id="table">RECTANGLE</button>
+        <button id="sphere">SPHERE</button>
+        <button id="helix">HELIX</button>
+        <button id="grid">GRID</button>
     </div>
 
-    <textarea id="soruInput" class="input-area" placeholder="Örneğin: f(x) = x^2 + 3x fonksiyonunun türevini adım adım açıkla."></textarea>
-    <button class="btn" onclick="soruSor()">Çözümü Getir</button>
-
-    <div id="cevapOutput" class="output-area">
-        Yanıtınız burada akademik formüllerle birlikte görüntülenecektir...
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS3DRenderer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TrackballControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
     <script>
-        async function soruSor() {
-            const soru = document.getElementById("soruInput").value;
-            const outputDiv = document.getElementById("cevapOutput");
-            
-            if (!soru) return alert("Lütfen bir soru girin!");
+        // Hata Yakalayıcı: Ekranda siyah kalmak yerine sorunu gösterir
+        window.onerror = function(msg, url, lineNo) {
+            document.getElementById('loading').innerHTML = "Hata oluştu:<br>" + msg + "<br>Satır: " + lineNo;
+            return false;
+        };
 
-            // Modal GPU'sunun uyanması birkaç saniye sürebilir
-            outputDiv.innerHTML = '<span class="loading">Yapay zeka çözümü üretiyor, lütfen bekleyin... (Bu işlem GPU uykudaysa 10-15 saniye sürebilir)</span>';
+        const tableData = [
+            // Satır 1
+            "\\int", "Integral", "Calculus", 1, 1, "Computes the area under a curve.",
+            "\\iint", "Double Int.", "Calculus", 2, 1, "Integration over a two-dimensional area.",
+            "\\iiint", "Triple Int.", "Calculus", 3, 1, "Integration over a three-dimensional volume.",
+            "\\oint", "Contour Int.", "Calculus", 4, 1, "Integration along a closed curve or path.",
+            "\\sum", "Summation", "Calculus", 5, 1, "Sum of a sequence of numbers.",
+            "\\prod", "Product", "Calculus", 6, 1, "Multiplication of a sequence of numbers.",
+            "\\partial", "Partial Deriv.", "Calculus", 7, 1, "Derivative with respect to one of multiple variables.",
+            "\\nabla", "Nabla", "Calculus", 8, 1, "Vector differential operator (del).",
+            "\\lim", "Limit", "Calculus", 9, 1, "Value that a function approaches as the input approaches some value.",
+            "\\infty", "Infinity", "Calculus", 10, 1, "Concept describing an unbounded limitless quantity.",
+            "dx", "Differential", "Calculus", 11, 1, "Infinitesimal change in the variable x.",
+            "\\approx", "Approximate", "Calculus", 12, 1, "Almost equal to, but not exactly.",
+            "\\Delta", "Delta", "Calculus", 13, 1, "Macroscopic change or difference.",
+            "\\pm", "Plus-Minus", "Calculus", 14, 1, "Indicates a choice of exactly two possible values.",
+            "\\mp", "Minus-Plus", "Calculus", 15, 1, "Used in conjunction with plus-minus to preserve order.",
 
-            try {
-                // Modal API adresimiz:
-                const apiUrl = "https://llama-3-8b-i-a-v2-awq--matematik-ai-backend-fastapi-app.modal.run/solve";
+            // Satır 2
+            "\\nabla \\cdot \\mathbf{F}", "Divergence", "Vector Calc", 1, 2, "Measures magnitude of a vector field's source or sink.",
+            "\\nabla \\times \\mathbf{F}", "Curl", "Vector Calc", 2, 2, "Describes the infinitesimal rotation of a 3D vector field.",
+            "\\nabla^2", "Laplacian", "Vector Calc", 3, 2, "Divergence of the gradient of a function.",
+            "d\\mathbf{r}", "Path Diff.", "Vector Calc", 4, 2, "Infinitesimal vector element of a path.",
+            "\\hat{n}", "Normal Vector", "Vector Calc", 5, 2, "Unit vector orthogonal to a surface.",
+            "\\mathbf{J}", "Jacobian", "Vector Calc", 6, 2, "Matrix of all first-order partial derivatives.",
+            "\\mathbf{H}", "Hessian", "Vector Calc", 7, 2, "Square matrix of second-order partial derivatives.",
+            "\\oint_C", "Line Integral", "Vector Calc", 8, 2, "Integral evaluated along a curve C.",
+            "\\iint_S", "Surface Int.", "Vector Calc", 9, 2, "Integral evaluated over a closed surface S.",
+            "\\frac{d}{dx}", "Derivative", "Calculus", 10, 2, "Rate of change of a function with respect to x.",
+            "\\frac{\\partial}{\\partial x}", "Partial Op.", "Calculus", 11, 2, "Operator for partial differentiation.",
+            "\\int_a^b", "Def. Integral", "Calculus", 12, 2, "Integral computed between limits a and b.",
+            "\\lim_{x \\to 0}", "Limit to Zero", "Calculus", 13, 2, "Behavior of a function as x approaches zero.",
+            "\\sum_{i=1}^n", "Finite Sum", "Calculus", 14, 2, "Summation of n discrete elements.",
+            "\\prod_{i=1}^n", "Finite Prod.", "Calculus", 15, 2, "Multiplication of n discrete elements.",
+
+            // Satır 3
+            "A^T", "Transpose", "Lin Algebra", 1, 3, "Matrix formed by swapping rows and columns.",
+            "A^{-1}", "Inverse", "Lin Algebra", 2, 3, "Matrix that yields the identity matrix when multiplied by A.",
+            "\\det(A)", "Determinant", "Lin Algebra", 3, 3, "Scalar value that is a function of the entries of a square matrix.",
+            "\\text{tr}(A)", "Trace", "Lin Algebra", 4, 3, "Sum of elements on the main diagonal of a matrix.",
+            "\\langle x, y \\rangle", "Inner Product", "Lin Algebra", 5, 3, "Generalization of the dot product in a vector space.",
+            "\\otimes", "Tensor Prod.", "Lin Algebra", 6, 3, "Operation on vector spaces creating a new tensor space.",
+            "\\oplus", "Direct Sum", "Lin Algebra", 7, 3, "Operation combining multiple vector spaces.",
+            "\\dim(V)", "Dimension", "Lin Algebra", 8, 3, "Number of vectors in a basis of vector space V.",
+            "\\text{ker}(L)", "Kernel", "Lin Algebra", 9, 3, "Set of vectors that map to the zero vector.",
+            "\\text{im}(L)", "Image", "Lin Algebra", 10, 3, "Set of all output vectors of a linear transformation.",
+            "\\lambda", "Eigenvalue", "Lin Algebra", 11, 3, "Scalar associated with a linear system of equations.",
+            "\\mathbf{v}", "Vector", "Lin Algebra", 12, 3, "Mathematical object with magnitude and direction.",
+            "\\mathbf{I}", "Identity Matrix", "Lin Algebra", 13, 3, "Square matrix with ones on the main diagonal.",
+            "\\mathbf{0}", "Zero Matrix", "Lin Algebra", 14, 3, "Matrix in which all entries are zero.",
+            "\\| \\mathbf{x} \\|", "Norm", "Lin Algebra", 15, 3, "Function that assigns a strictly positive length to each vector.",
+
+            // Satır 4
+            "\\forall", "For All", "Logic", 1, 4, "Universal quantification; true for all elements.",
+            "\\exists", "Exists", "Logic", 2, 4, "Existential quantification; true for at least one element.",
+            "\\nexists", "Not Exists", "Logic", 3, 4, "Indicates that there is no element satisfying the condition.",
+            "\\implies", "Implies", "Logic", 4, 4, "Conditional logical connective.",
+            "\\iff", "If and Only If", "Logic", 5, 4, "Biconditional logical connective.",
+            "\\wedge", "Logical AND", "Logic", 6, 4, "Conjunction; true only if both operands are true.",
+            "\\vee", "Logical OR", "Logic", 7, 4, "Disjunction; true if at least one operand is true.",
+            "\\neg", "Negation", "Logic", 8, 4, "Logical NOT; inverts the truth value.",
+            "\\oplus", "Logical XOR", "Logic", 9, 4, "Exclusive OR; true if exactly one operand is true.",
+            "\\therefore", "Therefore", "Logic", 10, 4, "Used to introduce a logical conclusion.",
+            "\\because", "Because", "Logic", 11, 4, "Used to introduce a premise or reasoning.",
+            "\\vdash", "Provable", "Logic", 12, 4, "Syntactic consequence; statement is provable in the system.",
+            "\\models", "Entails", "Logic", 13, 4, "Semantic consequence; models of left side are models of right side.",
+            "\\top", "Tautology", "Logic", 14, 4, "A formula that is always true.",
+            "\\bot", "Contradiction", "Logic", 15, 4, "A formula that is always false.",
+
+            // Satır 5
+            "\\in", "Element Of", "Sets", 1, 5, "Denotes membership in a set.",
+            "\\notin", "Not Element", "Sets", 2, 5, "Denotes non-membership in a set.",
+            "\\subset", "Subset", "Sets", 3, 5, "A set contained entirely within another set.",
+            "\\subseteq", "Subset/Eq.", "Sets", 4, 5, "A subset that may be equal to the parent set.",
+            "\\cup", "Union", "Sets", 5, 5, "Collection of all elements in the sets combined.",
+            "\\cap", "Intersection", "Sets", 6, 5, "Collection of elements present in all given sets.",
+            "\\setminus", "Set Diff.", "Sets", 7, 5, "Elements in the first set but not in the second.",
+            "\\emptyset", "Empty Set", "Sets", 8, 5, "The unique set containing no elements.",
+            "\\mathbb{N}", "Naturals", "Numbers", 9, 5, "Set of natural numbers (1, 2, 3, ...).",
+            "\\mathbb{Z}", "Integers", "Numbers", 10, 5, "Set of all integers (..., -1, 0, 1, ...).",
+            "\\mathbb{Q}", "Rationals", "Numbers", 11, 5, "Set of all rational numbers (fractions).",
+            "\\mathbb{R}", "Reals", "Numbers", 12, 5, "Set of all real numbers (continuum).",
+            "\\mathbb{C}", "Complex Num.", "Numbers", 13, 5, "Set of complex numbers with real and imaginary parts.",
+            "\\mathbb{P}", "Primes", "Numbers", 14, 5, "Set of all prime numbers.",
+            "\\aleph_0", "Aleph Null", "Sets", 15, 5, "Cardinality of the set of natural numbers.",
+
+            // Satır 6
+            "\\mathbb{E}[X]", "Expectation", "Statistics", 1, 6, "Expected value or long-run average of a random variable.",
+            "\\text{Var}(X)", "Variance", "Statistics", 2, 6, "Measure of the dispersion of a set of data points.",
+            "\\text{Cov}(X,Y)", "Covariance", "Statistics", 3, 6, "Measure of the joint variability of two random variables.",
+            "\\sigma", "Std Dev.", "Statistics", 4, 6, "Standard deviation; square root of variance.",
+            "\\mu", "Pop. Mean", "Statistics", 5, 6, "Mean or expected value of a population.",
+            "\\bar{x}", "Sample Mean", "Statistics", 6, 6, "Average of a set of sample observations.",
+            "P(A|B)", "Cond. Prob.", "Statistics", 7, 6, "Probability of event A given that B has occurred.",
+            "\\rho", "Correlation", "Statistics", 8, 6, "Measures the strength of a linear relationship.",
+            "\\chi^2", "Chi-Square", "Statistics", 9, 6, "Distribution used in hypothesis testing for variance.",
+            "\\mathcal{N}", "Normal Dist.", "Statistics", 10, 6, "Gaussian or bell-curve probability distribution.",
+            "H_0", "Null Hyp.", "Statistics", 11, 6, "Hypothesis of no effect or no difference.",
+            "H_a", "Alt. Hyp.", "Statistics", 12, 6, "Alternative hypothesis predicting an effect.",
+            "\\hat{p}", "Proportion", "Statistics", 13, 6, "Estimated proportion of a sample.",
+            "R^2", "R-Squared", "Statistics", 14, 6, "Coefficient of determination in regression.",
+            "\\sim", "Distributed As", "Statistics", 15, 6, "Indicates the probability distribution of a variable.",
+
+            // Satır 7
+            "\\partial A", "Boundary", "Topology", 1, 7, "Set of points in the closure of A but not the interior.",
+            "A^\\circ", "Interior", "Topology", 2, 7, "Set of all interior points of A.",
+            "\\bar{A}", "Closure", "Topology", 3, 7, "Smallest closed set containing A.",
+            "\\simeq", "Homotopy Eq.", "Topology", 4, 7, "Topological equivalence preserving holes.",
+            "\\cong", "Congruent", "Geometry", 5, 7, "Identical in form; coinciding exactly when superimposed.",
+            "\\perp", "Perpendicular", "Geometry", 6, 7, "Meeting at an angle of 90 degrees.",
+            "\\parallel", "Parallel", "Geometry", 7, 7, "Lines in a plane that do not meet.",
+            "\\angle", "Angle", "Geometry", 8, 7, "Figure formed by two rays sharing a common endpoint.",
+            "\\triangle", "Triangle", "Geometry", 9, 7, "Polygon with three edges and three vertices.",
+            "\\equiv", "Equivalent", "Algebra", 10, 7, "Identically equal or congruent modulo n.",
+            "\\propto", "Proportional", "Algebra", 11, 7, "Quantities varying in such a way that their ratio is constant.",
+            "n!", "Factorial", "Algebra", 12, 7, "Product of an integer and all integers below it.",
+            "\\binom{n}{k}", "Binomial", "Algebra", 13, 7, "Number of ways to choose k items from n.",
+            "\\Re(z)", "Real Part", "Complex", 14, 7, "The real component of a complex number.",
+            "\\Im(z)", "Imaginary Part", "Complex", 15, 7, "The imaginary component of a complex number."
+        ];
+
+        let camera, scene, renderer, controls;
+        const objects = [];
+        const targets = { table: [], sphere: [], helix: [], grid: [] };
+        let initAttempts = 0;
+
+        // Dinamik Yükleme Kontrolü (window.onload yerine)
+        function checkAndStart() {
+            if (typeof THREE !== 'undefined' && typeof TWEEN !== 'undefined' && typeof katex !== 'undefined' && typeof THREE.CSS3DRenderer !== 'undefined' && typeof THREE.TrackballControls !== 'undefined') {
+                document.getElementById('loading').textContent = "Başlatılıyor...";
+                init();
+                animate();
+            } else {
+                initAttempts++;
+                if (initAttempts > 50) { // 5 saniye beklerse hata ver
+                    document.getElementById('loading').innerHTML = "Kütüphaneler yüklenemedi!<br>İnternet bağlantınızı veya reklam engelleyicinizi (AdBlock) kontrol edip sayfayı yenileyin.";
+                } else {
+                    setTimeout(checkAndStart, 100);
+                }
+            }
+        }
+        
+        // Sistemi başlat
+        checkAndStart();
+
+        function init() {
+            camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.z = 2200; 
+            scene = new THREE.Scene();
+
+            const colorTones = [0.25, 0.45, 0.70]; 
+
+            for (let i = 0; i < tableData.length; i += 6) {
+                const element = document.createElement('div');
+                element.className = 'element';
+
+                const card = document.createElement('div');
+                card.className = 'card';
                 
-                const response = await fetch(apiUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt: soru })
+                const randomOpacity = colorTones[Math.floor(Math.random() * colorTones.length)];
+                card.style.backgroundColor = `rgba(0, 127, 127, ${randomOpacity})`;
+
+                element.addEventListener('click', function() {
+                    if (this.classList.contains('expanded')) {
+                        this.classList.remove('expanded');
+                    } else {
+                        document.querySelectorAll('.element.expanded').forEach(el => el.classList.remove('expanded'));
+                        this.classList.add('expanded');
+                    }
                 });
 
-                if (!response.ok) {
-                    throw new Error("Sunucuyla iletişim kurulamadı. (Tarayıcı konsolunu kontrol et)");
+                const category = document.createElement('div');
+                category.className = 'category';
+                category.textContent = tableData[i + 2];
+                card.appendChild(category);
+
+                const symbol = document.createElement('div');
+                symbol.className = 'symbol';
+                
+                try {
+                    katex.render(tableData[i], symbol, { throwOnError: false, displayMode: true });
+                } catch(e) {
+                    symbol.textContent = tableData[i];
                 }
+                card.appendChild(symbol);
 
-                const data = await response.json();
-                
-                // Satır atlamalarını HTML formatına çevirip yazdırıyoruz
-                outputDiv.innerHTML = data.answer.replace(/\n/g, '<br>');
-                
-                // MathJax'i tetikleyerek metnin içindeki LaTeX kodlarını ($) görsele dönüştürüyoruz
-                MathJax.typesetPromise([outputDiv]);
+                const details = document.createElement('div');
+                details.className = 'details';
+                details.textContent = tableData[i + 1];
+                card.appendChild(details);
 
-            } catch (error) {
-                outputDiv.innerHTML = `<span style="color:red;">Hata: ${error.message}</span>`;
-                console.error("Detaylı Hata:", error);
+                const description = document.createElement('div');
+                description.className = 'description';
+                description.textContent = tableData[i + 5]; 
+                card.appendChild(description);
+
+                element.appendChild(card); 
+
+                const objectCSS = new THREE.CSS3DObject(element);
+                objectCSS.position.x = Math.random() * 4000 - 2000;
+                objectCSS.position.y = Math.random() * 4000 - 2000;
+                objectCSS.position.z = Math.random() * 4000 - 2000;
+                scene.add(objectCSS);
+                objects.push(objectCSS);
+
+               const object = new THREE.Object3D();
+                object.position.x = (tableData[i + 3] - 8) * 160; 
+                object.position.y = (tableData[i + 4] - 4) * -200; // Satırlar arası boşluğu artırdık
+                targets.table.push(object);
             }
+
+            const vector = new THREE.Vector3();
+            for (let i = 0, l = objects.length; i < l; i++) {
+                const phi = Math.acos(-1 + (2 * i) / l);
+                const theta = Math.sqrt(l * Math.PI) * phi;
+                const object = new THREE.Object3D();
+                object.position.setFromSphericalCoords(900, phi, theta);
+                vector.copy(object.position).multiplyScalar(2);
+                object.lookAt(vector);
+                targets.sphere.push(object);
+            }
+
+            for (let i = 0, l = objects.length; i < l; i++) {
+                const theta = i * 0.3 + Math.PI;
+                const y = -(i * 15) + 750;
+                const object = new THREE.Object3D();
+                object.position.setFromCylindricalCoords(1000, theta, y);
+                vector.x = object.position.x * 2;
+                vector.y = object.position.y;
+                vector.z = object.position.z * 2;
+                object.lookAt(vector);
+                targets.helix.push(object);
+            }
+
+            for (let i = 0; i < objects.length; i++) {
+                const object = new THREE.Object3D();
+                object.position.x = ((i % 5) * 400) - 800;
+                object.position.y = (-(Math.floor(i / 5) % 5) * 400) + 800;
+                object.position.z = (Math.floor(i / 25)) * 1000 - 2000;
+                targets.grid.push(object);
+            }
+
+            renderer = new THREE.CSS3DRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            controls = new THREE.TrackballControls(camera, renderer.domElement);
+            controls.minDistance = 500;
+            controls.maxDistance = 6000;
+            controls.addEventListener('change', render);
+
+            document.getElementById('table').addEventListener('click', () => transform(targets.table, 2000));
+            document.getElementById('sphere').addEventListener('click', () => transform(targets.sphere, 2000));
+            document.getElementById('helix').addEventListener('click', () => transform(targets.helix, 2000));
+            document.getElementById('grid').addEventListener('click', () => transform(targets.grid, 2000));
+
+            document.getElementById('loading').style.display = 'none';
+            
+            transform(targets.table, 2000);
+            window.addEventListener('resize', onWindowResize);
+
+            setTimeout(() => {
+                document.querySelectorAll('.symbol .katex-display').forEach(el => {
+                    const parent = el.parentElement;
+                    const maxWidth = parent.clientWidth - 10;
+                    const maxHeight = parent.clientHeight - 10;
+                    
+                    const elWidth = el.offsetWidth || 1;
+                    const elHeight = el.offsetHeight || 1;
+
+                    const scaleX = maxWidth / elWidth;
+                    const scaleY = maxHeight / elHeight;
+                    const finalScale = Math.min(scaleX, scaleY, 1);
+                    
+                    if (finalScale < 1) {
+                        el.style.transform = `scale(${finalScale})`;
+                        el.style.transformOrigin = 'center center';
+                    }
+                });
+            }, 500);
+        }
+
+        function transform(targets, duration) {
+            TWEEN.removeAll();
+            for (let i = 0; i < objects.length; i++) {
+                const object = objects[i];
+                const target = targets[i];
+                new TWEEN.Tween(object.position)
+                    .to({ x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration)
+                    .easing(TWEEN.Easing.Exponential.InOut)
+                    .start();
+                new TWEEN.Tween(object.rotation)
+                    .to({ x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration)
+                    .easing(TWEEN.Easing.Exponential.InOut)
+                    .start();
+            }
+            
+            // GÜVENLİK YAMASI: TWEEN için dummy object kullanımı
+            const dummy = { t: 0 };
+            new TWEEN.Tween(dummy)
+                .to({ t: 1 }, duration * 2)
+                .onUpdate(render)
+                .start();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            render();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            TWEEN.update();
+            controls.update();
+        }
+
+        function render() {
+            renderer.render(scene, camera);
         }
     </script>
 </body>
